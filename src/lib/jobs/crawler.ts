@@ -26,7 +26,7 @@ export async function fetchAndProcessJobs(resumeContext: string = "") {
   console.log("🕷 Starting Job Crawler...");
   
   let totalNewJobs = 0;
-  const JOB_LIMIT = 20; // Process 5 jobs per feed
+  const JOB_LIMIT = 5; // Process 5 jobs per feed
 
   for (const feed of FEEDS) {
     let feedCount = 0; // Counter for this specific website

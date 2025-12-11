@@ -1,73 +1,93 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { FileText, Briefcase, Search, User, LogOut } from "lucide-react"
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  FileText,
+  Briefcase,
+  Search,
+  User,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   return (
-    <div className="flex h-screen w-full bg-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col shadow-sm">
-        <div className="p-6 border-b border-slate-100">
-          <h2 className="font-extrabold text-2xl flex items-center gap-2 text-black">
-            🤖 Agent
-          </h2>
-        </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/dashboard">
-            {/* Added text-black and font-medium */}
-            <Button variant="ghost" className="w-full justify-start gap-3 text-black font-medium hover:bg-slate-100 hover:text-gray-600">
-              <User className="h-5 w-5" />
-              Home
-            </Button>
+    <div className="flex min-h-screen w-full flex-col bg-slate-50">
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-white px-6 shadow-sm">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-bold text-xl text-black"
+        >
+          <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center text-white">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          ResumeAgent
+        </Link>
+
+        <nav className="flex items-center gap-6 ml-6 text-sm font-medium">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-slate-600 hover:text-black transition-colors"
+          >
+            <User className="h-4 w-4" /> Overview
           </Link>
-          <Link href="/dashboard/resume">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-black font-medium hover:bg-slate-100 hover:text-gray-600">
-              <FileText className="h-5 w-5" />
-              Master Resume
-            </Button>
+          <Link
+            href="/dashboard/jobs"
+            className="flex items-center gap-2 text-slate-600 hover:text-black transition-colors"
+          >
+            <Search className="h-4 w-4" /> Find Jobs
           </Link>
-          <Link href="/dashboard/jobs">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-black cursor-not-allowed hover:text-gray-600">
-              <Search className="h-5 w-5" />
-              Job Search
-            </Button>
+          <Link
+            href="/dashboard/applications"
+            className="flex items-center gap-2 text-slate-600 hover:text-black transition-colors"
+          >
+            <Briefcase className="h-4 w-4" /> Applications
           </Link>
-          <Link href="/dashboard/applications">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-black cursor-not-allowed hover:text-gray-600">
-              <Briefcase className="h-5 w-5" />
-              Applications
-            </Button>
+          <Link
+            href="/dashboard/resume"
+            className="flex items-center gap-2 text-slate-600 hover:text-black transition-colors"
+          >
+            <FileText className="h-4 w-4" /> Master Resume
           </Link>
         </nav>
-        
-        <div className="p-4 border-t border-slate-100">
-          <div className="text-xs font-bold text-black mb-2 truncate">
+
+        <div className="ml-auto flex items-center gap-4">
+          <div className="text-xs font-medium text-slate-500 hidden sm:block">
             {user.email}
           </div>
           <form action="/auth/signout" method="post">
-             <Button variant="outline" className="w-full text-xs h-9 border-slate-300 text-black hover:bg-slate-100">
-               <LogOut className="mr-2 h-4 w-4" /> Sign Out
-             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 border-slate-300 text-black hover:bg-slate-100"
+            >
+              <LogOut className="mr-2 h-3 w-3" /> Sign Out
+            </Button>
           </form>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-slate-50">
-        <div className="p-8 max-w-5xl mx-auto">
-          {children}
+      {/* MAIN CONTENT */}
+      <main className="flex-1 p-8 max-w-7xl mx-auto w-full">{children}</main>
+
+      {/* FOOTER */}
+      <footer className="border-t bg-white py-6 mt-auto">
+        <div className="container mx-auto px-4 text-center text-xs text-slate-400">
+          © {new Date().getFullYear()} ResumeAgent. All rights reserved.
         </div>
-      </main>
+      </footer>
     </div>
-  )
+  );
 }

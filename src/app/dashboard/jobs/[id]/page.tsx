@@ -22,7 +22,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
   if (!job) return notFound()
 
-    console.log('show the full job file from the database', job)
+    // console.log('show the full job file from the database', job)
   // Check if Applied
   let isApplied = false
   if (user) {

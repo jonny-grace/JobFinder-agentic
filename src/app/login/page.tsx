@@ -1,9 +1,9 @@
-import { login, signup, loginWithGoogle } from './actions'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { login, signup, loginWithGoogle } from "./actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 // import { Separator } from "@/components/ui/separator"
-import { Chrome } from "lucide-react" // Ensure you installed lucide-react
+import { Chrome } from "lucide-react"; // Ensure you installed lucide-react
 
 export default function LoginPage() {
   return (
@@ -18,9 +18,12 @@ export default function LoginPage() {
         </div>
         <div className="space-y-4">
           <blockquote className="text-2xl font-medium leading-normal">
-            "This agent saved me 40 hours of job hunting in the first week alone. It's not just a tool; it's my career pilot."
+            "This agent saved me 40 hours of job hunting in the first week
+            alone. It's not just a tool; it's my career pilot."
           </blockquote>
-          <div className="text-sm text-slate-400">Sofia Davis, Senior Product Designer</div>
+          <div className="text-sm text-slate-400">
+            Sofia Davis, Senior Product Designer
+          </div>
         </div>
       </div>
 
@@ -28,7 +31,7 @@ export default function LoginPage() {
       <div className="flex w-full items-center justify-center lg:w-1/2 px-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-2xl font-semibold tracking-tight text-black">
               Create an account
             </h1>
             <p className="text-sm text-slate-500">
@@ -39,15 +42,15 @@ export default function LoginPage() {
           <div className="grid gap-6">
             <form>
               <div className="grid gap-4">
-                <Button 
-                  formAction={loginWithGoogle} 
-                  variant="outline" 
+                <Button
+                  formAction={loginWithGoogle}
+                  variant="outline"
                   className="w-full gap-2"
                 >
-                  <Chrome className="h-4 w-4" />
-                  Continue with Google
+                  <Chrome className="h-4 w-4 text-black" />
+                  <div className="text-black">Continue with Google</div>
                 </Button>
-                
+
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t" />
@@ -60,7 +63,9 @@ export default function LoginPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label className="text-black" htmlFor="email">
+                    Email
+                  </Label>
                   <Input
                     id="email"
                     name="email"
@@ -72,30 +77,41 @@ export default function LoginPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                  />
+                  <Label className="text-black" htmlFor="password">
+                    Password
+                  </Label>
+                  <Input id="password" name="password" type="password" />
                 </div>
-                <Button formAction={login} className="w-full bg-black text-white hover:bg-slate-800">
+                <Button
+                  formAction={login}
+                  className="w-full bg-black text-white hover:bg-slate-800"
+                >
                   Sign In with Email
                 </Button>
-                <Button formAction={signup} variant="ghost" className="w-full text-xs">
+                <Button
+                  formAction={signup}
+                  variant="ghost"
+                  className="w-full text-xs"
+                >
                   Don't have an account? Sign Up
                 </Button>
               </div>
             </form>
           </div>
-          
+
           <p className="px-8 text-center text-sm text-slate-500">
             By clicking continue, you agree to our{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Privacy Policy
             </a>
             .
@@ -103,5 +119,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

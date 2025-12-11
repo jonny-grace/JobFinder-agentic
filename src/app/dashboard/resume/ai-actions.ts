@@ -33,7 +33,7 @@ async function extractTextFromPDF(buffer: Buffer): Promise<string> {
 }
 
 export async function parseResumeFromPdf(formData: FormData) {
-  console.log("📂 Starting PDF Parse...")
+  // console.log("📂 Starting PDF Parse...")
   
   const file = formData.get("file") as File
   if (!file) throw new Error("No file provided")
@@ -44,7 +44,7 @@ export async function parseResumeFromPdf(formData: FormData) {
     const buffer = Buffer.from(arrayBuffer)
     const resumeText = await extractTextFromPDF(buffer)
     
-    console.log("✅ PDF Text Extracted. Length:", resumeText.length)
+    // console.log("✅ PDF Text Extracted. Length:", resumeText.length)
 
     // 2. Prepare Prompt
     const prompt = `
@@ -85,7 +85,7 @@ export async function parseResumeFromPdf(formData: FormData) {
     // The new SDK returns the response object nested inside
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text
     
-    console.log("🤖 AI Response Received")
+    // console.log("🤖 AI Response Received")
 
     if (!text) throw new Error("Empty response from AI")
 
