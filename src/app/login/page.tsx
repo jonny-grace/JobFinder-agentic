@@ -67,6 +67,7 @@ export default function LoginPage() {
                     Email
                   </Label>
                   <Input
+                    className="text-black"
                     id="email"
                     name="email"
                     placeholder="name@example.com"
@@ -80,7 +81,12 @@ export default function LoginPage() {
                   <Label className="text-black" htmlFor="password">
                     Password
                   </Label>
-                  <Input id="password" name="password" type="password" />
+                  <Input
+                    className="text-black"
+                    id="password"
+                    name="password"
+                    type="password"
+                  />
                 </div>
                 <Button
                   formAction={login}
