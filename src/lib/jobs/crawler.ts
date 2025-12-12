@@ -1,5 +1,5 @@
-import Parser from 'rss-parser';
-import { createClient } from '@supabase/supabase-js';
+import Parser from "rss-parser";
+import { createClient } from "@supabase/supabase-js";
 import { GoogleGenAI } from "@google/genai";
 
 const supabase = createClient(
@@ -7,55 +7,71 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY! });
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY_CRAWLER! });
 const parser = new Parser();
 
 const FEEDS = [
-  { url: 'https://weworkremotely.com/categories/remote-programming-jobs.rss', source: 'WeWorkRemotely' },
-  { url: 'https://remoteok.com/remote-dev-jobs.rss', source: 'RemoteOK' }
-];
+  // Existing
+  {
+    url: "https://weworkremotely.com/categories/remote-programming-jobs.rss",
+    source: "WeWorkRemotely",
+  },
+  { url: "https://remoteok.com/remote-dev-jobs.rss", source: "RemoteOK" },
 
+  // NEW SOURCES
+  { url: "https://hnrss.org/whoishiring/jobs", source: "HackerNews" }, // Hiring threads
+  {
+    url: "https://www.workingnomads.com/jobs?category=development&rss=1",
+    source: "WorkingNomads",
+  },
+  { url: "https://remotive.com/remote-jobs/feed", source: "Remotive" },
+];
 function cleanText(text: string) {
-  return text.replace(/\s+/g, ' ').trim();
+  return text.replace(/\s+/g, " ").trim();
 }
 
 // Delay helper to prevent 429 errors
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function fetchAndProcessJobs(resumeContext: string = "") {
   console.log("🕷 Starting Job Crawler...");
-  
+
   let totalNewJobs = 0;
   const JOB_LIMIT = 5; // Process 5 jobs per feed
 
   for (const feed of FEEDS) {
     let feedCount = 0; // Counter for this specific website
-    
+
     try {
       const data = await parser.parseURL(feed.url);
-      console.log(`🔎 Scanning ${feed.source}: Found ${data.items.length} raw items.`);
-      
+      console.log(
+        `🔎 Scanning ${feed.source}: Found ${data.items.length} raw items.`
+      );
+
       for (const item of data.items.slice(0, JOB_LIMIT)) {
         const title = item.title ? cleanText(item.title) : "Unknown Role"; // FIX: Fallback for missing title
         const link = item.link || "";
-        
+
         if (!link) continue;
 
         // 1. Duplicate Check
         const { data: existing } = await supabase
-          .from('jobs')
-          .select('id')
-          .eq('url', link)
+          .from("jobs")
+          .select("id")
+          .eq("url", link)
           .single();
 
-        if (existing) continue; 
+        if (existing) continue;
 
         // 2. AI Analysis (With Rate Limit Handling)
         try {
           await sleep(2000); // Wait 2s
-          
+
           const rawDescription = item.contentSnippet || item.content || "";
-          const structuredData = await analyzeJobWithAI(rawDescription, resumeContext);
+          const structuredData = await analyzeJobWithAI(
+            rawDescription,
+            resumeContext
+          );
 
           // 3. Filter Low Scores
           if (structuredData.match_score <= 60) {
@@ -64,7 +80,7 @@ export async function fetchAndProcessJobs(resumeContext: string = "") {
           }
 
           // 4. Insert
-          const { error } = await supabase.from('jobs').insert({
+          const { error } = await supabase.from("jobs").insert({
             title: title,
             company: structuredData.company || "Unknown",
             description: structuredData.clean_html || rawDescription,
@@ -76,29 +92,31 @@ export async function fetchAndProcessJobs(resumeContext: string = "") {
             seniority: structuredData.seniority,
             match_score: structuredData.match_score,
             match_reason: structuredData.match_reason,
-            status: 'new'
+            status: "new",
           });
 
           if (!error) {
             feedCount++;
             totalNewJobs++;
-            console.log(`   ✅ Saved: ${title} (${structuredData.match_score}%)`);
+            console.log(
+              `   ✅ Saved: ${title} (${structuredData.match_score}%)`
+            );
           }
-
         } catch (aiError) {
           console.log(`   ✅ Saved: ${title} %)`);
 
           console.error(`   ⚠️ AI Error on "${title}":`, aiError);
         }
       }
-      
-      console.log(`📊 [${feed.source}] Summary: Added ${feedCount} new high-match jobs.`);
 
+      console.log(
+        `📊 [${feed.source}] Summary: Added ${feedCount} new high-match jobs.`
+      );
     } catch (err) {
       console.error(`❌ Feed Error (${feed.source}):`, err);
     }
   }
-  
+
   console.log(`🏁 Crawler Finished. Total New Jobs: ${totalNewJobs}`);
   return { success: true, count: totalNewJobs };
 }
@@ -137,11 +155,11 @@ async function analyzeJobWithAI(jobDescription: string, resumeContext: string) {
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-    config: { responseMimeType: "application/json" }
+    config: { responseMimeType: "application/json" },
   });
 
   const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) return { match_score: 0, match_reason: "AI Error" };
-  
+
   return JSON.parse(text);
 }
